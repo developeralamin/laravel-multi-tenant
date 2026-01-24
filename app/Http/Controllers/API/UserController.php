@@ -6,6 +6,7 @@ use App\Http\Resources\UserResource;
 use App\Models\User;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use App\Models\Person;
 class UserController extends Controller
 {
     public function index()
@@ -14,4 +15,5 @@ class UserController extends Controller
         
         return UserResource::collection($users);
     }
+
 } 

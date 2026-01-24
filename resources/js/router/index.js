@@ -1,9 +1,11 @@
+import { useAuthenticateStore } from '@/stores/authenticate'
 import { createRouter, createWebHistory } from 'vue-router'
+import Home from '../components/Home.vue'
 import Login from '../components/Login.vue'
 import Register from '../components/Register.vue'
-import Home from '../components/Home.vue'
-import Profile from '../components/auth/Profile.vue'
-import { useAuthenticateStore } from '@/stores/authenticate'
+import AddPerson from '../components/auth/AddPerson.vue'
+import EditPerson from '../components/auth/EditPerson.vue'
+import Person from '../components/auth/Person.vue'
 
 const routes = [
   {
@@ -11,9 +13,27 @@ const routes = [
     component: Home,
     meta: { requiresAuth: true }
   },
+  // {
+  //   path: '/profile',
+  //   component: Profile,
+  //   meta: { requiresAuth: true }
+  // },
+   {
+    path: '/person',
+    component: Person,
+    meta: { requiresAuth: true },
+    name:'person'
+  },
   {
-    path: '/profile',
-    component: Profile,
+    path: '/create',
+    component: AddPerson,
+    name: 'add-person',
+    meta: { requiresAuth: true }
+  },
+  {
+    path: '/edit/:id',
+    component: EditPerson,
+    name: 'edit-person',
     meta: { requiresAuth: true }
   },
   {

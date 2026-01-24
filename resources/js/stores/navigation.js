@@ -7,8 +7,9 @@ export const useNavigationStore = defineStore('navigation', () => {
 
   const navItems = [
     { name: 'Home', to: '/', auth: true },
-    { name: 'Profile', to: '/profile', auth: true },
+    // { name: 'Profile', to: '/profile', auth: true },
     { name: 'Dashboard', to: '/dashboard', auth: true },
+     { name: 'Person', to: '/person', auth: true },
     { name: 'Login', to: '/login', auth: false },
     { name: 'Register', to: '/register', auth: false }
   ]

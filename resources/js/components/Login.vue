@@ -60,10 +60,10 @@
 </template>
 
 <script setup>
-import { ref ,reactive} from 'vue'
-import { useRouter } from 'vue-router'
-import axios from 'axios'
 import { useAuthenticateStore } from '@/stores/authenticate'
+import axios from 'axios'
+import { reactive, ref } from 'vue'
+import { useRouter } from 'vue-router'
 
 const router = useRouter()
 const authenticate = useAuthenticateStore()
@@ -84,7 +84,7 @@ const onFinish = () => {
           authenticate.login(response.data.data.token)
           authenticate.setUser(response.data.data.user)
           loading.value = false
-          router.push('/chat')
+          router.push('/person')
     }).catch((error)=>{
        if (error.response.data.status == "fail") {
            alert(error.response.data.message)
