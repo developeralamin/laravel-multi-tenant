@@ -23,6 +23,7 @@
             <th>{{ user.id }}</th>
             <td>{{ user.name }}</td>
             <td>{{ user.address }}</td>
+        
             <td>
               <img :src="user.photo" alt="Photo" class="img-fluid rounded" style="max-height: 100px"/>
          
@@ -43,6 +44,7 @@
 import axios from 'axios';
 import { onMounted, ref } from 'vue';
 
+const selectedIds = ref([]);
 const persons = ref();
 
 onMounted(() => {

@@ -6,6 +6,9 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\PersonController;
 use App\Http\Controllers\API\AuthController;
 use App\Http\Controllers\API\UserController;
+use App\Http\Controllers\Tenant\PostController;
+use App\Http\Controllers\Admin\TenantController;
+use App\Http\Middleware\TenantMiddleware;
 
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
@@ -19,4 +22,12 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/show/{id}', [PersonController::class, 'show']);
     Route::post('/update/{id}', [PersonController::class, 'update']);
     Route::delete('/persons/{id}', [PersonController::class, 'destroy']);
+});
+
+
+
+Route::post('/tenants', [TenantController::class, 'store']);
+
+Route::middleware(TenantMiddleware::class)->group(function () {
+    Route::apiResource('posts', PostController::class);
 });
