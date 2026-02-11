@@ -8,7 +8,5 @@ class Tenant extends Model
     /**
      * Create a new class Tenant.
      */
-     protected $guarded  = [
-     
-    ];
+     protected $guarded  = [];
 }
