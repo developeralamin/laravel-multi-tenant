@@ -17,7 +17,6 @@
                   class="form-control form-control-lg"
                   v-model="person.name"
                   placeholder="Enter full name"
-                  required
                 />
                 <small class="text-danger d-block mt-2" v-if="errors.name">
                   <i class="fas fa-exclamation-circle"></i> {{ errors.name[0] }}
@@ -32,7 +31,6 @@
                   v-model="person.address"
                   placeholder="Enter address"
                   rows="3"
-                  required
                 ></textarea>
                 <small class="text-danger d-block mt-2" v-if="errors.address">
                   <i class="fas fa-exclamation-circle"></i> {{ errors.address[0] }}
@@ -42,18 +40,44 @@
               <!-- Photo Upload -->
               <div class="form-group mb-4">
                 <label class="form-label fw-bold">Profile Photo</label>
-                <div class="input-group input-group-lg">
+                
+                <!-- Drag & Drop Zone -->
+                <div
+                  class="border-3 border-dashed rounded p-5 text-center"
+                  :class="[
+                    isDragging ? 'bg-primary bg-opacity-10 border-primary' : 'bg-light border-secondary',
+                    errors.photo ? 'border-danger' : ''
+                  ]"
+                  @dragover.prevent="isDragging = true"
+                  @dragleave.prevent="isDragging = false"
+                  @drop.prevent="onDropFile"
+                  style="cursor: pointer; transition: all 0.3s ease;"
+                >
                   <input
                     type="file"
-                    class="form-control"
+                    class="d-none"
                     id="photoInput"
                     accept="image/*"
                     @change="onImageChange"
+                    ref="fileInput"
                   />
-                  <label class="input-group-text bg-primary text-white" for="photoInput">
-                    <i class="fas fa-camera"></i> Upload
-                  </label>
+                  
+                  <div @click="$refs.fileInput.click()" style="cursor: pointer;">
+                    <i class="fas fa-cloud-upload-alt fa-3x mb-3" :class="isDragging ? 'text-primary' : 'text-secondary'"></i>
+                    <p class="mb-2 fw-bold text-dark">
+                      {{ isDragging ? 'Drop your photo here' : 'Drag & drop your photo here' }}
+                    </p>
+                    <p class="text-muted mb-3">or click to select a file</p>
+                    <button
+                      type="button"
+                      class="btn btn-primary"
+                      @click.prevent="$refs.fileInput.click()"
+                    >
+                      <i class="fas fa-folder-open"></i> Choose Photo
+                    </button>
+                  </div>
                 </div>
+                
                 <small class="text-danger d-block mt-2" v-if="errors.photo">
                   <i class="fas fa-exclamation-circle"></i> {{ errors.photo[0] }}
                 </small>
@@ -135,6 +159,8 @@ const loading = ref(false)
 const uploadProgress = ref(0)
 const errors = ref({})
 const imagePreview = ref(null)
+const isDragging = ref(false)
+const fileInput = ref(null)
 
 const person = reactive({
   name: '',
@@ -148,17 +174,57 @@ const onImageChange = (event) => {
 
   person.photo = file
   imagePreview.value = URL.createObjectURL(file)
+  // Clear photo error when file is selected
+  errors.value.photo = null
+}
+
+const onDropFile = (event) => {
+  isDragging.value = false
+  const file = event.dataTransfer.files[0]
+  
+  if (!file) return
+  
+  // Validate file is an image
+  if (!file.type.startsWith('image/')) {
+    errors.value.photo = ['Please upload a valid image file']
+    return
+  }
+  
+  person.photo = file
+  imagePreview.value = URL.createObjectURL(file)
+  // Clear photo error when file is successfully dropped
+  errors.value.photo = null
 }
 
 const removeImage = () => {
   person.photo = null
   imagePreview.value = null
+  document.getElementById('photoInput').value = ''
+}
+
+const validateForm = () => {
+  errors.value = {}
+  
+  if (!person.name || person.name.trim() === '') {
+    errors.value.name = ['Full name is required']
+  }
+  
+  if (!person.address || person.address.trim() === '') {
+    errors.value.address = ['Address is required']
+  }
+  
+  if (!person.photo) {
+    errors.value.photo = ['Profile photo is required']
+  }
+  
+  return Object.keys(errors.value).length === 0
 }
 
 const onFinish = async () => {
+  // Validate form before sending request
+  
   loading.value = true
   uploadProgress.value = 0
-  errors.value = {}
 
   const formData = new FormData()
   formData.append('name', person.name)
@@ -176,6 +242,7 @@ const onFinish = async () => {
     })
     router.push({ path: 'person' })
   } catch (error) {
+    console.log(error.response?.data?.errors)
     if (error.response?.data?.errors) {
       errors.value = error.response.data.errors
     }
